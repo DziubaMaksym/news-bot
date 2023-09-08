@@ -1,0 +1,3 @@
+Mastodon.py
+google-cloud-storage
+requests
