@@ -18,7 +18,7 @@ def get_story_details(story_id):
 def format_unix_time(unix_time):
     return datetime.utcfromtimestamp(unix_time).strftime('%Y-%m-%d %H:%M:%S UTC')
 
-def post_to_mastodon(story_details):
+def post_to_mastodon(story_details, mastodon):
     status = f"Latest Top Story on HackerNews: {story_details['title']}\n"
     status += f"URL: {story_details.get('url', 'N/A')}\n"
     status += f"Author: {story_details.get('by', 'N/A')}\n"
@@ -48,7 +48,7 @@ def hacker_news_function(request):
     if latest_top_story_id and (last_printed_story_id is None or latest_top_story_id != last_printed_story_id):
         story_details = get_story_details(latest_top_story_id)
         if story_details:
-            post_to_mastodon(story_details)
+            post_to_mastodon(story_details, mastodon)
             blob.upload_from_string(str(latest_top_story_id))
     else:
         return "Waiting for a new story...", 200
