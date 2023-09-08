@@ -19,12 +19,15 @@ def format_unix_time(unix_time):
     return datetime.utcfromtimestamp(unix_time).strftime('%Y-%m-%d %H:%M:%S UTC')
 
 def post_to_mastodon(story_details, mastodon):
-    status = f"Latest Top Story on HackerNews: {story_details['title']}\n"
-    status += f"URL: {story_details.get('url', 'N/A')}\n"
-    status += f"Author: {story_details.get('by', 'N/A')}\n"
-    status += f"Score: {story_details.get('score', 'N/A')}\n"
-    status += f"Number of Comments: {len(story_details.get('kids', []))}\n"
-    status += f"Posted At: {format_unix_time(story_details.get('time', 0))}"
+    story_id = story_details.get('id', 'N/A')
+    status = f"📰 Latest Top Story on #HackerNews: {story_details['title']}\n"
+    status += f"🔗 URL: {story_details.get('url', 'N/A')}\n"
+    status += f"👤 Author: {story_details.get('by', 'N/A')}\n"
+    status += f"⭐ Score: {story_details.get('score', 'N/A')}\n"
+    status += f"💬 Number of Comments: {len(story_details.get('kids', []))}\n"
+    status += f"🕒 Posted At: {format_unix_time(story_details.get('time', 0))}\n"
+    status += f"🔍 Original Story: https://news.ycombinator.com/item?id={story_id}\n"
+    status += f"#News #Bot #HackerNews"
     mastodon.toot(status)
 
 def hacker_news_function(request):
