@@ -10,52 +10,40 @@ from google.cloud import storage
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
 
-# In-memory cache for the latest story ID
-latest_story_id_cache = None
-
 def hash_story_details(story_details):
     return hashlib.md5(json.dumps(story_details, sort_keys=True).encode()).hexdigest()
 
-def get_latest_top_story_id(retry_count=3):
-    global latest_story_id_cache
-    if latest_story_id_cache:
-        return latest_story_id_cache
-
+def get_latest_top_story_id():
     url = "https://hacker-news.firebaseio.com/v0/topstories.json"
-    for _ in range(retry_count):
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-            latest_story_id_cache = json.loads(response.text)[0]
-            return latest_story_id_cache
-        except requests.RequestException as e:
-            logging.error(f"HTTP request failed: {e}")
-            continue
-    return None
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return json.loads(response.text)[0]
+    except requests.RequestException as e:
+        logging.error(f"HTTP request failed: {e}")
+        return None
 
-def get_story_details(story_id, retry_count=3):
+def get_story_details(story_id):
     url = f"https://hacker-news.firebaseio.com/v0/item/{story_id}.json"
-    for _ in range(retry_count):
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-            return json.loads(response.text)
-        except requests.RequestException as e:
-            logging.error(f"HTTP request failed: {e}")
-            continue
-    return None
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return json.loads(response.text)
+    except requests.RequestException as e:
+        logging.error(f"HTTP request failed: {e}")
+        return None
 
 def format_unix_time(unix_time):
     return datetime.utcfromtimestamp(unix_time).strftime('%Y-%m-%d %H:%M:%S UTC')
 
 def post_to_mastodon(story_details, mastodon, hash_blob):
-    story_id = story_details.get('id', 'N/A')
     current_hash = hash_story_details(story_details)
+    story_id = story_details.get('id', 'N/A')
     if hash_blob.exists():
         last_hash = hash_blob.download_as_text()
         if current_hash == last_hash:
             return "Duplicate story. Not posting.", 202
-    status = f"Latest Top Story on HackerNews: {story_details['title']}"
+    status = f"Latest Top Story on #HackerNews: {story_details['title']}\n"
     status += f"🔗 URL: {story_details.get('url', 'N/A')}\n"
     status += f"👤 Author: {story_details.get('by', 'N/A')}\n"
     status += f"⭐ Score: {story_details.get('score', 'N/A')}\n"
@@ -68,9 +56,10 @@ def post_to_mastodon(story_details, mastodon, hash_blob):
     return "Story posted successfully", 200
 
 def hacker_news_function(request):
-    global latest_story_id_cache
-
     try:
+        latest_top_story_id = get_latest_top_story_id()
+        if latest_top_story_id is None:
+            return "Could not fetch the latest story ID", 500
         mastodon = Mastodon(
             access_token=os.environ.get('MASTODON_ACCESS_TOKEN'),
             api_base_url=os.environ.get('MASTODON_API_BASE_URL')
