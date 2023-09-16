@@ -10,8 +10,22 @@ from google.cloud import storage
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
 
+popular_hashtags = set([
+    "technology", "science", "bigdata", "iphone", "ios", 
+    "android", "mobile", "video", "design", "innovation", 
+    "startups", "tech", "cloud", "gadget", "instatech", 
+    "electronic", "device", "techtrends", "technews", "engineering",
+    "ai", "ml", "cybersecurity", "blockchain", "devops",
+    "opensource", "datacenter", "automation", "software",
+    "hardware", "networking", "virtualization", "iot", "robotics",
+    "cybercrime", "programming", "coding", "computerscience",
+    "privacy", "hacking", "hacker", "hackers", "hack", "hackathon"
+])
+
+
+
 def hash_story_details(story_details):
-    return hashlib.md5(json.dumps(story_details, sort_keys=True).encode()).hexdigest()
+    return hashlib.sha256(story_details['title'].encode()).hexdigest()
 
 def get_latest_top_story_id():
     url = "https://hacker-news.firebaseio.com/v0/topstories.json"
@@ -35,25 +49,39 @@ def get_story_details(story_id):
 
 def format_unix_time(unix_time):
     return datetime.utcfromtimestamp(unix_time).strftime('%Y-%m-%d %H:%M:%S UTC')
+    
 
 def post_to_mastodon(story_details, mastodon, hash_blob):
     current_hash = hash_story_details(story_details)
-    story_id = story_details.get('id', 'N/A')
+    
+    last_hash = None
     if hash_blob.exists():
         last_hash = hash_blob.download_as_text()
-        if current_hash == last_hash:
-            return "Duplicate story. Not posting.", 202
+
+    if current_hash == last_hash:
+        return "Duplicate story. Not posting.", 202
+
+    # Extract words from the title and convert them to lowercase
+    title_words = set(story_details['title'].lower().split())
+
+    # Find matching hashtags
+    matching_hashtags = {f"#{tag}" for tag in popular_hashtags if tag in title_words}
+    standard_hashtags = {"#news", "#bot", "#hackernews"}
+
+    # Construct the status message
     status = f"Latest Top Story on #HackerNews: {story_details['title']}\n"
-    status += f"🔗 URL: {story_details.get('url', 'N/A')}\n"
+    status += f"🔍 Original Story: {story_details.get('url', 'N/A')}\n"
     status += f"👤 Author: {story_details.get('by', 'N/A')}\n"
     status += f"⭐ Score: {story_details.get('score', 'N/A')}\n"
     status += f"💬 Number of Comments: {len(story_details.get('kids', []))}\n"
     status += f"🕒 Posted At: {format_unix_time(story_details.get('time', 0))}\n"
-    status += f"🔍 Original Story: https://news.ycombinator.com/item?id={story_id}\n"
-    status += f"#News #Bot #HackerNews"
+    status += f"🔗 URL: https://news.ycombinator.com/item?id={story_details.get('id', 'N/A')}\n"
+    status += " ".join(matching_hashtags | standard_hashtags)
+    
     mastodon.toot(status)
     hash_blob.upload_from_string(current_hash)
     return "Story posted successfully", 200
+
 
 def hacker_news_function(request):
     try:
