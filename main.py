@@ -53,9 +53,34 @@ popular_hashtags = set([
     "servicenow", "datadog", "newrelic", "palantir", "zoom",
     "dropbox", "qualcomm", "amd", "tesla", "spacex", "tencent",
     "alibaba", "huawei", "sony", "sap", "wework", "shopify",
-    "unity", "epicgames", "zoho", "rackspace", "cloudera"
+    "unity", "epicgames", "zoho", "rackspace", "cloudera",
+    "edgecomputing", "serverless", "containerization", "aiethics",
+    "techinclusion", "cloudsecurity", "itmanagement", "virtualreality",
+    "augmentedreality", "quantumai", "neuralnetworks", "cloudmigration",
+    "datasecurity", "blockchaindevelopment", "internetofbehaviors", "5g",
+    "greenit", "sustainabletech", "remotework", "techinnovation",
+    "techleadership", "enterprisesoftware", "itconsulting", "itautomation",
+    "techregulation", "dataprivacylaws", "techcompliance", "aiinhealthcare",
+    "selfdrivingcars", "wearabletech", "smartinfrastructure", "techeducation",
+    "digitalskills", "codingforkids", "womenwhotech", "techdiversity",
+    "cloudstrategies", "techstartups", "iotsecurity", "web3",
+    "blockchaintechnology", "cryptocurrency", "nft", "metaverse",
+    "docker", "ansible", "jenkins", "grafana", "prometheus",
+    "puppet", "chef", "circleci", "travisci", "git",
+    "linode", "digitalocean", "heroku", "bitbucket", "confluence",
+    "trello", "asana", "basecamp", "twilio", "stripe",
+    "square", "paypal", "symantec", "fortinet", "fireeye",
+    "cyberark", "f5networks", "juniper", "arista", "brocade",
+    "checkpoin", "crowdstrike", "sophos", "trendmicro", "malwarebytes",
+    "kaspersky", "mcafee", "eset", "avast", "avg",
+    "symphony", "signal", "telegram", "wechat", "line",
+    "kakao", "viber", "discord", "skype", "teams",
+    "bluejeans", "gopro", "fitbit", "garmin", "polar",
+    "suunto", "xiaomi", "oppo", "vivo", "oneplus",
+    "lg", "panasonic", "sharp", "toshiba", "hitachi",
+    "fujitsu", "asus", "lenovo", "msi", "razer",
+    "corsair", "logitech", "steelseries", "hyperx", "alienware"
 ])
-
 
 
 def hash_story_details(story_details):
@@ -93,17 +118,17 @@ def post_to_mastodon(story_details, mastodon, hash_blob):
         last_hash = hash_blob.download_as_text()
 
     if current_hash == last_hash:
-        return "Duplicate story. Not posting.", 202
+        return "Duplicate story. Not posting.", 208
 
     # Extract words from the title and convert them to lowercase
     title_words = set(story_details['title'].lower().split())
 
     # Find matching hashtags
     matching_hashtags = {f"#{tag}" for tag in popular_hashtags if tag in title_words}
-    standard_hashtags = {"#news", "#bot", "#hackernews"}
+    standard_hashtags = {"#news", "#bot", "#hackernews", "#hackernewsbot"}
 
     # Construct the status message
-    status = f"Latest Top Story on #HackerNews: {story_details['title']}\n"
+    status = f"📜 Latest Top Story on #HackerNews: {story_details['title']}\n"
     status += f"🔍 Original Story: {story_details.get('url', 'N/A')}\n"
     status += f"👤 Author: {story_details.get('by', 'N/A')}\n"
     status += f"⭐ Score: {story_details.get('score', 'N/A')}\n"
