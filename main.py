@@ -174,7 +174,7 @@ def hacker_news_function(request):
                 blob.upload_from_string(str(latest_top_story_id))
                 return message, code
         else:
-            return "Waiting for a new story...", 202
+            return "Waiting for a new story...", 208
 
     except Exception as e:
         logging.error(f"An error occurred: {e}")

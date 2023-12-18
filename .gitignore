@@ -161,3 +161,6 @@ cython_debug/
 news_bot
 *.db
 *.sh
+*.json
+.terraform
+*.env
