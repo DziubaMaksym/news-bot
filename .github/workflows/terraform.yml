@@ -16,9 +16,9 @@ on:
 env:
   TF_VERSION: 1.6.3
   TF_ACTION_WORKING_DIR: terraform
-  TF_VAR_project: {{ vars.project }}
-  TF_VAR_region: {{ vars.region }}
-  GOOGLE_CREDENTIALS: {{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+  TF_VAR_project: ${{ vars.project }}
+  TF_VAR_region: ${{ vars.region }}
+  GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
   
 jobs:
   terraform:
