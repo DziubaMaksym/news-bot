@@ -18,6 +18,9 @@ env:
   TF_ACTION_WORKING_DIR: terraform
   TF_VAR_project: ${{ vars.project }}
   TF_VAR_region: ${{ vars.region }}
+  TF_VAR_mastodon_access_token: ${{ secrets.mastadon_access_token }}
+  TF_VAR_mastodon_api_base_url: ${{ secrets.mastodon_api_base_url }}
+  TF_VAR_gcs_bucket_name: ${{ secrets.gcs_bucket_name }}
   
 jobs:
   terraform:

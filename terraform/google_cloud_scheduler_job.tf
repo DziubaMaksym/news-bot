@@ -1,11 +1,11 @@
 resource "google_cloud_scheduler_job" "cloud_function_trigger" {
   name        = "hacker-news-function-trigger"
   description = "Trigger Hacker News function every 20 minutes"
-  schedule    = "*/2 * * * *"
+  schedule    = "*/20 * * * *"
   time_zone   = "Etc/UTC"
 
   http_target {
-    uri         = google_cloudfunctions2_function.hacker_news.service_config[0].uri
+    uri         = "${google_cloudfunctions2_function.hacker_news.service_config[0].uri}/"
     http_method = "GET"
     oidc_token {
       audience              = "${google_cloudfunctions2_function.hacker_news.service_config[0].uri}/"
