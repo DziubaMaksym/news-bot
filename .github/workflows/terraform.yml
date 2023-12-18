@@ -18,7 +18,6 @@ env:
   TF_ACTION_WORKING_DIR: terraform
   TF_VAR_project: ${{ vars.project }}
   TF_VAR_region: ${{ vars.region }}
-  GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
   
 jobs:
   terraform:
@@ -33,7 +32,7 @@ jobs:
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@v0.2.0
       with:
-        service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
         project_id: ${{ vars.project }}
 
     - name: Zip function source
