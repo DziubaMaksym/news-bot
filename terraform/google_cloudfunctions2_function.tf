@@ -30,6 +30,7 @@ resource "google_cloudfunctions2_function" "hacker_news" {
   depends_on = [
     google_service_account.hacker_news_account
   ]
+
 }
 
 resource "google_cloudfunctions2_function_iam_member" "invoker" {

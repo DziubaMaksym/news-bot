@@ -4,6 +4,7 @@ terraform {
     bucket = "hacker_news_tf_state"
     prefix = "terraform/state"
   }
+
   required_providers {
     google = {
       source  = "hashicorp/google"
