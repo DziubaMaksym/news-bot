@@ -8,7 +8,7 @@ resource "google_storage_bucket" "hacker_news_bucket" {
 }
 
 resource "google_storage_bucket_object" "hacker_news_code" {
-  name   = "main.py"
-  source = "../main.py"
+  name   = "function.zip"
+  source = "function.zip"
   bucket = google_storage_bucket.hacker_news_bucket.name
 }

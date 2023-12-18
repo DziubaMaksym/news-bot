@@ -5,11 +5,13 @@ on:
     #  push:
     #  branches: [ main ]
     #  paths:
-    #  - 'test-infrastructure/**.tf'
+    #  - 'terraform/**.tf'
+    #  - 'main.py'
     # pull_request:
     #  branches: [ main ]
     #  paths:
-    #  - 'test-infrastructure/**.tf'
+    #  - 'terraform/**.tf'
+    #  - 'main.py'
 
 env:
   TF_VERSION: 1.6.3
@@ -28,6 +30,17 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0.2.0
+      with:
+        service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        project_id: ${{ vars.project }}
+
+    - name: Zip function source
+      run: zip -r function-source.zip main.py requirements.txt
+
+    - name: Upload to Google Cloud Storage
+      run: gsutil cp function-source.zip gs://${{ secrets.GCP_BUCKET_NAME }}/function.zip
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
       with:
