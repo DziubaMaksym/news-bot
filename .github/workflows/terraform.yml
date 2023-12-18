@@ -1,0 +1,94 @@
+--- 
+name: "Hacker news bot infra"
+on:
+  workflow_dispatch:
+    #  push:
+    #  branches: [ main ]
+    #  paths:
+    #  - 'test-infrastructure/**.tf'
+    # pull_request:
+    #  branches: [ main ]
+    #  paths:
+    #  - 'test-infrastructure/**.tf'
+
+env:
+  TF_VERSION: 1.6.3
+  TF_ACTION_WORKING_DIR: terraform
+  TF_VAR_project: {{ vars.project }}
+  TF_VAR_region: {{ vars.region }}
+  GOOGLE_CREDENTIALS: {{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+  
+jobs:
+  terraform:
+    name: 'News bot Env'
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
+
+    - name: Terraform Init
+      run: terraform init
+      working-directory: ${{ env.TF_ACTION_WORKING_DIR }}
+
+    - name: Terraform Validate
+      run: terraform validate
+      working-directory: ${{ env.TF_ACTION_WORKING_DIR }}
+
+    - name: Terraform Plan
+      id: plan
+      run: terraform plan -no-color -out=plan.tfplan
+      continue-on-error: true
+      working-directory: ${{ env.TF_ACTION_WORKING_DIR }}
+
+    - name: Convert plan to txt
+      run: |
+        terraform show -no-color plan.tfplan > plan.txt
+      working-directory: ${{ env.TF_ACTION_WORKING_DIR }}
+
+    - name: Comment PR with Plan Output
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v3
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          const fs = require('fs');
+          const planOutput = fs.readFileSync('${{ env.TF_ACTION_WORKING_DIR }}/plan.txt', 'utf8');
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `### Terraform Plan Output\n\`\`\`hcl\n${planOutput}\n\`\`\``
+          });
+    - name: Terraform Apply
+      if: (github.ref == 'refs/heads/main') && github.event_name == 'push'
+      id: apply
+      run: |
+        terraform apply -auto-approve -input=false -no-color "plan.tfplan" | tee apply_output.txt
+      working-directory: ${{ env.TF_ACTION_WORKING_DIR }}
+      continue-on-error: true
+    
+    - name: Apply Output to summary
+      if: github.event_name == 'push'
+      run: |
+        echo "### Terraform Apply Output" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`hcl" >> $GITHUB_STEP_SUMMARY
+        terraform show -no-color plan.tfplan >> apply_output.txt
+        cat apply_output.txt >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+      working-directory: ${{ env.TF_ACTION_WORKING_DIR }}
+
+    - name: Fail if output contains error
+      if: github.event_name == 'push'
+      run: |
+        if grep -q "Error" apply_output.txt; then
+          echo "Error found in output";
+          exit 1;
+        fi
+      working-directory: ${{ env.TF_ACTION_WORKING_DIR }}
