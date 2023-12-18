@@ -7,3 +7,16 @@ variable "region" {
   description = "Region of GCP"
   type        = string
 }
+
+variable "mastodon_access_token" {
+  description = ""
+  type        = string
+}
+variable "mastodon_api_base_url" {
+  description = ""
+  type        = string
+}
+variable "gcs_bucket_name" {
+  description = ""
+  type        = string
+}

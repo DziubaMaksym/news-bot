@@ -162,5 +162,8 @@ news_bot
 *.db
 *.sh
 *.json
-.terraform
+*.terraform
+*.tfstate
+*.tfstate.backup
 *.env
+*.zip
