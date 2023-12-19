@@ -28,4 +28,4 @@ jobs:
         with:
           source: "main.py"
           pylint-options: "--rcfile=.pylintrc"
-          mypy-options: "--ignore-missing-imports --show-error-codes --ignore-missing-module-docstring --ignore-missing-function-docstring"
+          mypy-options: "--ignore-missing-imports --ignore-missing-stub"
