@@ -13,7 +13,7 @@ jobs:
       - name: Clone repo
         uses: actions/checkout@v4
       
-      - name: Azure TF lint
+      - name: GCP TF lint
         uses: reviewdog/action-tflint@v1
         with:
           github_token: ${{ secrets.gh_token }}
