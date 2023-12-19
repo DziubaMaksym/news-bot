@@ -20,7 +20,6 @@ env:
   TF_VAR_region: ${{ vars.region }}
   TF_VAR_mastodon_access_token: ${{ secrets.mastadon_access_token }}
   TF_VAR_mastodon_api_base_url: ${{ secrets.mastodon_api_base_url }}
-  TF_VAR_gcs_bucket_name: ${{ secrets.gcs_bucket_name }}
   
 jobs:
   terraform:
@@ -32,21 +31,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Set up Cloud SDK
-      uses: google-github-actions/setup-gcloud@v0.2.0
-      with:
-        service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
-        project_id: ${{ vars.project }}
-
     - name: Zip function source
       run: zip -r function-source.zip main.py requirements.txt
-
-    - name: Upload to Google Cloud Storage
-      run: gsutil cp function-source.zip gs://${{ secrets.GCP_BUCKET_NAME }}/function.zip
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: ${{ env.TF_VERSION }}
 
     - name: Terraform Init
       run: terraform init
