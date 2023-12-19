@@ -1,7 +1,7 @@
 resource "google_cloud_scheduler_job" "cloud_function_trigger" {
   name        = "hacker-news-function-trigger"
   description = "Trigger Hacker News function every 20 minutes"
-  schedule    = "*/25 * * * *"
+  schedule    = "*/20 * * * *"
   time_zone   = "Etc/UTC"
 
   http_target {
