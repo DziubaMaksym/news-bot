@@ -5,8 +5,8 @@ on:
   pull_request:
 
 jobs:
-  tflint:
-    name: runner / tflint
+  lint:
+    name: tflint / python lint
     runs-on: ubuntu-latest
 
     steps:
