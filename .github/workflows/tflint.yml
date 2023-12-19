@@ -24,6 +24,6 @@ jobs:
           tflint_rulesets: "google" 
 
       - name: Python Linter
-         uses: sunnysid3up/python-linter@master
-         with:
-           source: "main.py"
+        uses: sunnysid3up/python-linter@master
+        with:
+          source: "main.py"
