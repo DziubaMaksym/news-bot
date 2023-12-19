@@ -1,0 +1,24 @@
+---
+name: Terraform Lint
+
+on:
+  pull_request:
+
+jobs:
+  tflint:
+    name: runner / tflint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v4
+      
+      - name: Azure TF lint
+        uses: reviewdog/action-tflint@v1
+        with:
+          github_token: ${{ secrets.gh_token }}
+          working_directory: "terraform" # Optional. Change working directory
+          reporter: github-pr-review # Optional. Change reporter
+          fail_on_error: "true" # Optional. Fail action if errors are found
+          filter_mode: "nofilter" # Optional. Check all files, not just the diff
+          tflint_rulesets: "google" # Optional. Extra official rulesets to install
