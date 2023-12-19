@@ -28,4 +28,4 @@ jobs:
         with:
           source: "main.py"
           pylint-options: "--rcfile=.pylintrc"
-          mypy-options: "--ignore-missing-imports --ignore-missing-stub"
+          mypy-options: "--ignore-missing-imports --no-color-output --pretty"
