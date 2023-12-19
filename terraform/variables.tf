@@ -16,7 +16,3 @@ variable "mastodon_api_base_url" {
   description = ""
   type        = string
 }
-variable "gcs_bucket_name" {
-  description = ""
-  type        = string
-}
