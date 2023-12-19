@@ -35,7 +35,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Zip function source
-      run: zip -r function-source.zip main.py requirements.txt
+      run: zip -r function.zip main.py requirements.txt
 
     - name: Terraform Init
       run: terraform init
