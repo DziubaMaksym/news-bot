@@ -2,23 +2,27 @@
 name: "Hacker news bot infra"
 on:
   workflow_dispatch:
-    #  push:
-    #  branches: [ main ]
-    #  paths:
-    #  - 'terraform/**.tf'
-    #  - 'main.py'
-    # pull_request:
-    #  branches: [ main ]
-    #  paths:
-    #  - 'terraform/**.tf'
-    #  - 'main.py'
+    push:
+    branches: [ main ]
+    paths:
+    - 'terraform/**.tf'
+    - 'main.py'
+    pull_request:
+    branches: [ main ]
+    paths:
+    - 'terraform/**.tf'
+    - 'main.py'
 
 env:
   TF_VERSION: 1.6.3
   TF_ACTION_WORKING_DIR: terraform
-  TF_VAR_project: {{ vars.project }}
-  TF_VAR_region: {{ vars.region }}
-  GOOGLE_CREDENTIALS: {{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+  TF_VAR_project: ${{ vars.project }}
+  TF_VAR_region: ${{ vars.region }}
+  TF_VAR_mastodon_access_token: ${{ secrets.mastadon_access_token }}
+  TF_VAR_mastodon_api_base_url: ${{ secrets.mastodon_api_base_url }}
+  GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+  
   
 jobs:
   terraform:
@@ -30,21 +34,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Set up Cloud SDK
-      uses: google-github-actions/setup-gcloud@v0.2.0
-      with:
-        service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        project_id: ${{ vars.project }}
-
     - name: Zip function source
       run: zip -r function-source.zip main.py requirements.txt
-
-    - name: Upload to Google Cloud Storage
-      run: gsutil cp function-source.zip gs://${{ secrets.GCP_BUCKET_NAME }}/function.zip
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: ${{ env.TF_VERSION }}
 
     - name: Terraform Init
       run: terraform init

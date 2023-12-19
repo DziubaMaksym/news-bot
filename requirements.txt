@@ -2,4 +2,3 @@ functions-framework==3.*
 Mastodon.py
 google-cloud-storage
 requests
-*.env
