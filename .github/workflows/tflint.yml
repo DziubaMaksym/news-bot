@@ -27,3 +27,4 @@ jobs:
         uses: sunnysid3up/python-linter@master
         with:
           source: "main.py"
+          pylint-options: "--rcfile=.pylintrc"
