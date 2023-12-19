@@ -36,6 +36,9 @@ jobs:
 
     - name: Zip function source
       run: zip -r function.zip main.py requirements.txt
+    
+    - name: move arch 
+      run: mv function.zip terraform/
 
     - name: Terraform Init
       run: terraform init
