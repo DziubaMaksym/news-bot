@@ -1,13 +1,9 @@
 --- 
 name: "Hacker news bot infra"
+
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
-    paths:
-    - 'terraform/**.tf'
-    - 'main.py'
-  pull_request:
     branches: [ main ]
     paths:
     - 'terraform/**.tf'
