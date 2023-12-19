@@ -79,7 +79,8 @@ popular_hashtags = set([
     "suunto", "xiaomi", "oppo", "vivo", "oneplus",
     "lg", "panasonic", "sharp", "toshiba", "hitachi",
     "fujitsu", "asus", "lenovo", "msi", "razer",
-    "corsair", "logitech", "steelseries", "hyperx", "alienware"
+    "corsair", "logitech", "steelseries", "hyperx", "alienware",
+    "macbook", "gpt-4", "gpt", "openai", "tesla"
 ])
 
 
